@@ -20,15 +20,33 @@ import CardBody from "components/Card/CardBody.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
 import CardActions from "@material-ui/core/CardActions";
+import {connect} from 'react-redux'
+import {emailChanged, passwordChanged, loginUser} from '../../actions'
 
 import loginPageStyle from "assets/jss/material-dashboard-pro-react/views/loginPageStyle.jsx";
+import { Target } from "react-popper";
 
 class LoginPage extends React.Component {
+
+  onEmailChange(text) {
+    this.props.emailChanged(text)
+}
+
+onPasswordChange(text) {
+    this.props.passwordChanged(text)
+}
+
+onButtonPress() {
+    const {email, password} = this.props;
+    this.props.loginUser({email, password})
+}
+
   constructor(props) {
     super(props);
     // we use this to make the card to appear after the page has been rendered
     this.state = {
-      cardAnimaton: "cardHidden"
+      cardAnimaton: "cardHidden",
+      password: ''
     };
   }
   componentDidMount() {
@@ -81,7 +99,10 @@ class LoginPage extends React.Component {
                           <InputAdornment position="end">
                             <Email className={classes.inputAdornmentIcon} />
                           </InputAdornment>
-                        )
+                        ),
+                        onChange: e => {
+                          this.onEmailChange(e.target.value)
+                        }
                       }}
                     />
                     <CustomInput
@@ -91,6 +112,10 @@ class LoginPage extends React.Component {
                         fullWidth: true
                       }}
                       inputProps={{
+                        type: 'password',
+                        onChange: e => {
+                          this.onPasswordChange(e.target.value)
+                        },
                         endAdornment: (
                           <InputAdornment position="end">
                             <LockOutline
@@ -101,7 +126,7 @@ class LoginPage extends React.Component {
                       }}
                     />
                     <CardActions className={classes.justifyContentCenter}>
-                      <Button round color="info" justify="center">
+                      <Button round color="info" justify="center" onClick={()=>this.onButtonPress()}>
                         Let's Go
                       </Button>
                     </CardActions>
@@ -127,8 +152,16 @@ class LoginPage extends React.Component {
   }
 }
 
+const mapStateToProps = state => {
+  return {
+      email: state.auth.email,
+      password: state.auth.password,
+      error: state.auth.error
+  }
+}
+
 LoginPage.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(loginPageStyle)(LoginPage);
+export default connect(mapStateToProps, {emailChanged, passwordChanged, loginUser})(withStyles(loginPageStyle)(LoginPage))
