@@ -3,11 +3,15 @@ import {
     PASSWORD_CHANGED,
     LOGIN_USER_SUCCESS,
     LOGIN_USER_FAIL,
-    LOGIN_USER
+    LOGIN_USER,
+    PASSWORD_EMPTY,
+    EMAIL_EMPTY,
+    FIELDS_EMPTY
 } from './types'
 
+import axios from 'axios'
+
 export const emailChanged = text => {
-    console.log(text)
     return {
         type: EMAIL_CHANGED,
         payload: text
@@ -15,32 +19,42 @@ export const emailChanged = text => {
 }
 
 export const passwordChanged = text => {
-    console.log(text)
     return {
         type: PASSWORD_CHANGED,
         payload: text
     }
 }
 
+export const textChanged = () => {
+    return {
+        type: LOGIN_USER
+    }
+}
+
 export const loginUser = ({email, password}) => {
+    if(email === '' && password === '') 
+        return {
+            type: FIELDS_EMPTY
+        }
+    else if(email === '')
+        return {
+            type: EMAIL_EMPTY
+        }
+    else if(password === '')
+        return {
+            type: PASSWORD_EMPTY
+        }
     return dispatch => {
         dispatch({type: LOGIN_USER})
         console.log('email is', email)
         console.log('password is', password)
-        fetch('http://127.0.0.1:3001/philance/users/login', {
-            method: 'post',
-            headers: {
-                'message': 'application/json',
-                'token': 'application/json'
-            },
-            body: JSON.stringify({
-                     email: email,
-                     password: password
-                   })
-        }).then(function(response) {
-            return response.json();
-        }).then(function(data) {
-            console.log(data)
+        axios.post('http://127.0.0.1:3001/philance/users/login', {
+            email: email,
+            password: password
+        })
+        .then(response=>console.log(response))
+        .catch(error=>{
+        console.log(error);
         });
     }
 }

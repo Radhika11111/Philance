@@ -21,7 +21,7 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
 import CardActions from "@material-ui/core/CardActions";
 import {connect} from 'react-redux'
-import {emailChanged, passwordChanged, loginUser} from '../../actions'
+import {emailChanged, passwordChanged, loginUser, textChanged} from '../../actions'
 
 import loginPageStyle from "assets/jss/material-dashboard-pro-react/views/loginPageStyle.jsx";
 import { Target } from "react-popper";
@@ -30,10 +30,12 @@ class LoginPage extends React.Component {
 
   onEmailChange(text) {
     this.props.emailChanged(text)
+    this.props.textChanged()
 }
 
 onPasswordChange(text) {
     this.props.passwordChanged(text)
+    this.props.textChanged()
 }
 
 onButtonPress() {
@@ -127,7 +129,7 @@ onButtonPress() {
                     />
                     <CardActions className={classes.justifyContentCenter}>
                       <Button round color="info" justify="center" onClick={()=>this.onButtonPress()}>
-                        Let's Go
+                        {this.props.error}
                       </Button>
                     </CardActions>
                     <CardActions className={classes.justifyContentCenter}>
@@ -164,4 +166,4 @@ LoginPage.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps, {emailChanged, passwordChanged, loginUser})(withStyles(loginPageStyle)(LoginPage))
+ export default connect(mapStateToProps, {emailChanged, passwordChanged, loginUser, textChanged})(withStyles(loginPageStyle)(LoginPage))
