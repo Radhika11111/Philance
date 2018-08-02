@@ -21,7 +21,7 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
 import CardActions from "@material-ui/core/CardActions";
 import {connect} from 'react-redux'
-import {emailChanged, passwordChanged, loginUser, textChanged} from '../../actions'
+import {emailChanged, passwordChanged, loginUser, textChanged} from '../../actions/login'
 
 import loginPageStyle from "assets/jss/material-dashboard-pro-react/views/loginPageStyle.jsx";
 import { Target } from "react-popper";
