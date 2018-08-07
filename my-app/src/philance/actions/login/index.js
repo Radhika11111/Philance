@@ -7,7 +7,7 @@ import {
     PASSWORD_EMPTY,
     EMAIL_EMPTY,
     FIELDS_EMPTY
-} from './types'
+} from '../types'
 
 import axios from 'axios'
 
