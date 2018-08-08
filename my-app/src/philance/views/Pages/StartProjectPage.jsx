@@ -48,9 +48,18 @@ class StartProject extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      checked: [24, 22],
+      checked: '',
       selectedValue: null,
-      selectedEnabled: "b"
+      selectedEnabled: "b",
+      name: '',
+      location: '',
+      description: '',
+      freelancers: '',
+      impact: '',
+      volunteerStatus: true,
+      freeLanceStatus: true,
+      startDate: '',
+      endDate: ''
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleChangeEnabled = this.handleChangeEnabled.bind(this);
@@ -60,21 +69,6 @@ class StartProject extends React.Component {
   }
   handleChangeEnabled(event) {
     this.setState({ selectedEnabled: event.target.value });
-  }
-  handleToggle(value) {
-    const { checked } = this.state;
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    this.setState({
-      checked: newChecked
-    });
   }
 
   render() {
@@ -104,7 +98,10 @@ class StartProject extends React.Component {
                           fullWidth: true
                         }}
                         inputProps={{
-                          placeholder: "Enter a Project Name"
+                          placeholder: "Enter a Project Name",
+                          onChange: e => {
+                            this.setState({name: e.target.value})
+                          }
                         }}
                       />
                     </GridItem>
@@ -122,7 +119,10 @@ class StartProject extends React.Component {
                           fullWidth: true
                         }}
                         inputProps={{
-                          placeholder: "Enter a Project Description"
+                          placeholder: "Enter a Project Description",
+                          onChange: e => {
+                            this.setState({description: e.target.value})
+                          }
                         }}
                       />
                     </GridItem>
@@ -151,7 +151,7 @@ class StartProject extends React.Component {
                           control={
                             <Checkbox
                               tabIndex={-1}
-                              onClick={() => this.handleToggle(3)}
+                              onClick={() => this.setState({volunteerStatus: !this.state.volunteerStatus})}
                               checkedIcon={
                                 <Check className={classes.checkedIcon} />
                               }
@@ -170,12 +170,15 @@ class StartProject extends React.Component {
                           class="form-control selectpicker"
                           data-style="btn btn-link"
                           id="exampleFormControlSelect1"
+                          value = {this.state.volunteers}
+                          onChange = {(e)=>{this.setState({volunteers: e.target.value})}}
+                          disabled={this.state.volunteerStatus}
                         >
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                          <option>5</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
                         </select>
                         <div />
 
@@ -183,7 +186,7 @@ class StartProject extends React.Component {
                           control={
                             <Checkbox
                               tabIndex={-1}
-                              onClick={() => this.handleToggle(3)}
+                              onClick={() => this.setState({freeLanceStatus: !this.state.freeLanceStatus})}
                               checkedIcon={
                                 <Check className={classes.checkedIcon} />
                               }
@@ -202,12 +205,15 @@ class StartProject extends React.Component {
                           class="form-control selectpicker"
                           data-style="btn btn-link"
                           id="exampleFormControlSelect1"
+                          value = {this.state.freelancers}
+                          onChange = {(e)=>{this.setState({freelancers: e.target.value})}}
+                          disabled = {this.state.freeLanceStatus}
                         >
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                          <option>5</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
                         </select>
                         <div />
                       </div>
@@ -227,12 +233,14 @@ class StartProject extends React.Component {
                           class="form-control selectpicker"
                           data-style="btn btn-link"
                           id="exampleFormControlSelect2"
+                          value = {this.state.skills}
+                          onChange = {(e)=>{this.setState({skills: e.target.value})}}
                         >
-                          <option>Skill 1</option>
-                          <option>Skill 2</option>
-                          <option>Skill 3</option>
-                          <option>Skill 4</option>
-                          <option>Skill 5</option>
+                          <option value = "Skill 1">Skill 1</option>
+                          <option value = "Skill 2">Skill 2</option>
+                          <option value = "Skill 3">Skill 3</option>
+                          <option value = "Skill 4">Skill 4</option>
+                          <option value = "Skill 5">Skill 5</option>
                         </select>
                       </div>
                     </GridItem>
@@ -251,12 +259,14 @@ class StartProject extends React.Component {
                           class="form-control selectpicker"
                           data-style="btn btn-link"
                           id="exampleFormControlSelect2"
+                          value = {this.state.impact}
+                          onChange = {(e)=>{this.setState({impact: e.target.value})}}
                         >
-                          <option>Impact Category 1</option>
-                          <option>Impact Category 2</option>
-                          <option>Impact Category 3</option>
-                          <option>Impact Category 4</option>
-                          <option>Impact Category 5</option>
+                          <option value = "Impact Category 1" >Impact Category 1</option>
+                          <option value = "Impact Category 2" >Impact Category 2</option>
+                          <option value = "Impact Category 3" >Impact Category 3</option>
+                          <option value = "Impact Category 4" >Impact Category 4</option>
+                          <option value = "Impact Category 5" >Impact Category 5</option>
                         </select>
                       </div>
                     </GridItem>
@@ -270,12 +280,16 @@ class StartProject extends React.Component {
                     </GridItem>
                     <GridItem xs={12} sm={10}>
                       <CustomInput
-                        id="projectDescription"
+                        id="projectLocation"
                         formControlProps={{
                           fullWidth: true
                         }}
                         inputProps={{
-                          placeholder: "Enter a Project Description"
+                          placeholder: "Enter a Project Location",
+                          onChange: e => {
+                          this.setState({location: e.target.value})
+                          console.log(this.state)
+                        }
                         }}
                       />
                     </GridItem>
@@ -302,8 +316,14 @@ class StartProject extends React.Component {
                           <br />
                           <FormControl fullWidth>
                             <Datetime
-                              timeFormat={false}
-                              inputProps={{ placeholder: "Start Date" }}
+                              timeFormat={true}
+                              inputProps={{
+                                placeholder: "Start Date",
+                                onChange: e => {
+                                  this.setState({startDate: e.target.value})
+                                  console.log(this.state.startDate)
+                                }
+                              }}
                             />
                           </FormControl>
                         </CardBody>
@@ -324,8 +344,14 @@ class StartProject extends React.Component {
                           <br />
                           <FormControl fullWidth>
                             <Datetime
-                              timeFormat={false}
-                              inputProps={{ placeholder: "End Date" }}
+                              timeFormat={true}
+                              inputProps={{
+                                placeholder: "End Date",
+                                onChange: e => {
+                                  this.setState({endDate: e.target.value})
+                                  console.log(this.state.endDate)
+                                }
+                            }}
                             />
                           </FormControl>
                         </CardBody>

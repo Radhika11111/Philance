@@ -13,7 +13,7 @@ const INITIAL_STATE = {
     email: '',
     password: '',
     token: null,
-    isLoggedIn: false,
+    isLoggedIn: true,
     error: 'LET\'s GO'
 }
 
