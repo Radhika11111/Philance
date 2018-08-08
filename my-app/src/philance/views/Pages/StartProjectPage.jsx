@@ -58,7 +58,7 @@ class StartProject extends React.Component {
       impact: '',
       volunteerStatus: true,
       freeLanceStatus: true,
-      startDate: '',
+      startDate: null,
       endDate: ''
     };
     this.handleChange = this.handleChange.bind(this);
@@ -318,12 +318,9 @@ class StartProject extends React.Component {
                             <Datetime
                               timeFormat={true}
                               inputProps={{
-                                placeholder: "Start Date",
-                                onChange: e => {
-                                  this.setState({startDate: e.target.value})
-                                  console.log(this.state.startDate)
-                                }
+                                placeholder: "Start Date"
                               }}
+                              onChange={date=>this.setState({startDate: date._d})}
                             />
                           </FormControl>
                         </CardBody>
@@ -347,11 +344,8 @@ class StartProject extends React.Component {
                               timeFormat={true}
                               inputProps={{
                                 placeholder: "End Date",
-                                onChange: e => {
-                                  this.setState({endDate: e.target.value})
-                                  console.log(this.state.endDate)
-                                }
                             }}
+                            onChange={date=>this.setState({startDate: date._d})}
                             />
                           </FormControl>
                         </CardBody>
@@ -399,7 +393,7 @@ class StartProject extends React.Component {
                   <GridContainer>
                     <GridItem xs={12} sm={2} />
                     <GridItem xs={12} sm={2}>
-                      <Button color="rose">Create a Project</Button>
+                      <Button onClick = {()=>console.log(this.state.startDate, this.state.endDate)} color="rose">Create a Project</Button>
                     </GridItem>
                   </GridContainer>
                 </form>
