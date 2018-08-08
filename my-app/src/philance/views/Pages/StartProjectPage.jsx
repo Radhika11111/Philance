@@ -316,11 +316,11 @@ class StartProject extends React.Component {
                           <br />
                           <FormControl fullWidth>
                             <Datetime
-                              timeFormat={true}
+                              timeFormat={false}
                               inputProps={{
                                 placeholder: "Start Date"
                               }}
-                              onChange={date=>this.setState({startDate: date._d})}
+                              onChange={date=>this.setState({startDate: JSON.stringify(date._d)})}
                             />
                           </FormControl>
                         </CardBody>
@@ -341,7 +341,7 @@ class StartProject extends React.Component {
                           <br />
                           <FormControl fullWidth>
                             <Datetime
-                              timeFormat={true}
+                              timeFormat={false}
                               inputProps={{
                                 placeholder: "End Date",
                             }}

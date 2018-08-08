@@ -2,16 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { createBrowserHistory } from "history";
 import { Router, Route, Switch } from "react-router-dom";
-import ReduxThunk from 'redux-thunk'
-import reducers from './philance/reducers'
-import {createStore, applyMiddleware} from 'redux'
 import {Provider} from 'react-redux'
 
 import indexRoutes from "philance/routes/index.jsx";
 import "assets/scss/material-dashboard-pro-react.css?v=1.2.0";
+import store from './philance/store/store'
 
 const hist = createBrowserHistory();
-const store = createStore(reducers, {}, applyMiddleware(ReduxThunk))
 
 ReactDOM.render(
   <Provider store={store}>
