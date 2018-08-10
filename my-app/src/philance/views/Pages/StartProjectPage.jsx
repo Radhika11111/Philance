@@ -41,6 +41,7 @@ import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import Today from "@material-ui/icons/Today";
 import LibraryBooks from "@material-ui/icons/LibraryBooks";
 import AvTimer from "@material-ui/icons/AvTimer";
+import Geolocation from 'react-geolocation';
 
 import startProjectPageStyle from "philance/views/PageStyles/StartProjectPageStyles";
 
@@ -59,7 +60,8 @@ class StartProject extends React.Component {
       volunteerStatus: true,
       freeLanceStatus: true,
       startDate: null,
-      endDate: ''
+      endDate: '',
+      locationError: null
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleChangeEnabled = this.handleChangeEnabled.bind(this);
@@ -276,6 +278,27 @@ class StartProject extends React.Component {
                     <GridItem xs={12} sm={2}>
                       <FormLabel className={classes.labelHorizontal}>
                         Project Location
+                        <Geolocation
+                        render={({
+                          fetchingPosition,
+                          position: { coords: { latitude, longitude } = {} } = {},
+                          error,
+                          getCurrentPosition
+                        }) =>
+                          <div>
+                            <Button color = "rose" onClick={getCurrentPosition}>Get Position</Button>
+                            {
+                              error &&
+                              this.setState({
+                                locationError: error
+                              })
+                              }
+                            <pre>
+                            latitude: {latitude}
+                              longitude: {longitude}
+                            </pre>
+                          </div>}
+                      />
                       </FormLabel>
                     </GridItem>
                     <GridItem xs={12} sm={10}>
