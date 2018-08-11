@@ -41,7 +41,7 @@ import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import Today from "@material-ui/icons/Today";
 import LibraryBooks from "@material-ui/icons/LibraryBooks";
 import AvTimer from "@material-ui/icons/AvTimer";
-import Geolocation from 'react-geolocation';
+import { geolocated } from 'react-geolocated';
 
 import startProjectPageStyle from "philance/views/PageStyles/StartProjectPageStyles";
 
@@ -61,7 +61,11 @@ class StartProject extends React.Component {
       freeLanceStatus: true,
       startDate: null,
       endDate: '',
-      locationError: null
+      locationError: null,
+      latitude: '',
+      longitude: '',
+      error: 'Get Location',
+      enable: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleChangeEnabled = this.handleChangeEnabled.bind(this);
@@ -278,36 +282,16 @@ class StartProject extends React.Component {
                     <GridItem xs={12} sm={2}>
                       <FormLabel className={classes.labelHorizontal}>
                         Project Location
-                        <Geolocation
-                        render={({
-                          fetchingPosition,
-                          position: { coords: { latitude, longitude } = {} } = {},
-                          error,
-                          getCurrentPosition
-                        }) =>
-                          <div>
-                            <Button color = "rose" onClick={getCurrentPosition}>Get Position</Button>
-                            {
-                              error &&
-                              this.setState({
-                                locationError: error
-                              })
-                              }
-                            <pre>
-                            latitude: {latitude}
-                              longitude: {longitude}
-                            </pre>
-                          </div>}
-                      />
                       </FormLabel>
                     </GridItem>
-                    <GridItem xs={12} sm={10}>
+                    <GridItem xs={12} sm={7}>
                       <CustomInput
                         id="projectLocation"
                         formControlProps={{
                           fullWidth: true
                         }}
                         inputProps={{
+                          value:'latitude: '+this.state.latitude+' longitude: '+this.state.longitude,
                           placeholder: "Enter a Project Location",
                           onChange: e => {
                           this.setState({location: e.target.value})
@@ -316,8 +300,20 @@ class StartProject extends React.Component {
                         }}
                       />
                     </GridItem>
+                    <GridItem xs={12} sm={2}>
+                            <div>
+                              <Button color = "rose" className = "float-right" onClick={()=>{
+                                !this.props.isGeolocationAvailable
+                                  ? this.setState({error: 'Geolocation Not Supported'})
+                                  : !this.props.isGeolocationEnabled
+                                    ? null
+                                    : this.props.coords
+                                      ? this.setState({latitude: this.props.coords.latitude, longitude: this.props.coords.longitude, enable: true, error: 'Get Location'})
+                                      : this.setState({error: 'Getting Data'})
+                              }}>{this.state.error}</Button>
+                            </div>
+                    </GridItem>
                   </GridContainer>
-
                   <GridContainer>
                     <GridItem xs={12} sm={2}>
                       <FormLabel className={classes.labelHorizontal}>
@@ -416,7 +412,7 @@ class StartProject extends React.Component {
                   <GridContainer>
                     <GridItem xs={12} sm={2} />
                     <GridItem xs={12} sm={2}>
-                      <Button onClick = {()=>console.log(this.state.startDate, this.state.endDate)} color="rose">Create a Project</Button>
+                      <Button onClick = {()=>console.log(this.state.latitude, this.state.longitude)} color="rose">Create a Project</Button>
                     </GridItem>
                   </GridContainer>
                 </form>
@@ -433,4 +429,9 @@ StartProject.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(startProjectPageStyle)(StartProject);
+export default geolocated({
+  positionOptions: {
+    enableHighAccuracy: false,
+  },
+  userDecisionTimeout: 5000,
+})(withStyles(startProjectPageStyle)(StartProject));
