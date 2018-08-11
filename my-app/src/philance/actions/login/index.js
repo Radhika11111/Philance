@@ -48,7 +48,7 @@ export const loginUser = ({email, password}) => {
         dispatch({type: LOGIN_USER})
         console.log('email is', email)
         console.log('password is', password)
-        axios.post('http://127.0.0.1:3001/philance/users/login', {
+        axios.post('http://127.0.0.1:3001/philance/users/login/', {
             email: email,
             password: password
         })

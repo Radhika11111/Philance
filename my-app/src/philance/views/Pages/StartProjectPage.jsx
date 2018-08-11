@@ -46,6 +46,9 @@ import { compose, withProps } from "recompose"
 import startProjectPageStyle from "philance/views/PageStyles/StartProjectPageStyles";
 import {  withScriptjs, withGoogleMap, GoogleMap, Marker  } from "react-google-maps"
 
+import store from '../../store/store'
+import { startProject } from "../../actions/startProject";
+
 const MyMapComponent = compose(
   withProps({
     googleMapURL: "https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places",
@@ -73,14 +76,17 @@ class StartProject extends React.Component {
       selectedValue: null,
       selectedEnabled: "b",
       name: '',
-      location: '',
       description: '',
       freelancers: '',
       impact: '',
       volunteerStatus: true,
       freeLanceStatus: true,
+      volunteers: null,
+      freeLancers: null,
       startDate: null,
-      endDate: '',
+      endDate: null,
+      budget: null,
+      skills: null,
       locationError: null,
       latitude: -34.397,
       longitude: 150.644,
@@ -328,11 +334,7 @@ class StartProject extends React.Component {
                         }}
                         inputProps={{
                           value:'latitude: '+this.state.latitude+' longitude: '+this.state.longitude,
-                          placeholder: "Enter a Project Location",
-                          onChange: e => {
-                          this.setState({location: e.target.value})
-                          console.log(this.state)
-                        }
+                          placeholder: "Enter a Project Location"
                         }}
                       />
                     </GridItem>
@@ -381,7 +383,7 @@ class StartProject extends React.Component {
                               inputProps={{
                                 placeholder: "Start Date"
                               }}
-                              onChange={date=>this.setState({startDate: JSON.stringify(date._d)})}
+                              onChange={date=>this.setState({startDate: date._d})}
                             />
                           </FormControl>
                         </CardBody>
@@ -427,7 +429,11 @@ class StartProject extends React.Component {
                           fullWidth: true
                         }}
                         inputProps={{
-                          placeholder: "Enter a Project Description"
+                          placeholder: "Enter estimated budget",
+                          onChange: e => {
+                            this.setState({budget: e.target.value})
+                            console.log(this.state.budget)
+                          }
                         }}
                       />
                     </GridItem>
@@ -454,7 +460,34 @@ class StartProject extends React.Component {
                   <GridContainer>
                     <GridItem xs={12} sm={2} />
                     <GridItem xs={12} sm={2}>
-                      <Button onClick = {()=>console.log(this.state.latitude, this.state.longitude)} color="rose">Create a Project</Button>
+                      <Button onClick = {()=>{
+                        const {
+                        name,
+                        description,
+                        volunteers,
+                        freelancers,
+                        skills,
+                        impact,
+                        startDate,
+                        endDate,
+                        budget,
+                        latitude,
+                        longitude,
+                      } = this.state
+                      store.dispatch(startProject(
+                        name,
+                        description,
+                        volunteers,
+                        freelancers,
+                        skills,
+                        impact,
+                        latitude,
+                        longitude,
+                        startDate,
+                        endDate,
+                        budget
+                      ))
+                      }} color="rose">Create a Project</Button>
                     </GridItem>
                   </GridContainer>
                 </form>
