@@ -42,8 +42,28 @@ import Today from "@material-ui/icons/Today";
 import LibraryBooks from "@material-ui/icons/LibraryBooks";
 import AvTimer from "@material-ui/icons/AvTimer";
 import { geolocated } from 'react-geolocated';
-
+import { compose, withProps } from "recompose"
 import startProjectPageStyle from "philance/views/PageStyles/StartProjectPageStyles";
+import {  withScriptjs, withGoogleMap, GoogleMap, Marker  } from "react-google-maps"
+
+const MyMapComponent = compose(
+  withProps({
+    googleMapURL: "https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places",
+    loadingElement: <div style={{ height: `100%` }} />,
+    containerElement: <div style={{ height: `400px` }} />,
+    mapElement: <div style={{ height: `100%` }} />,
+  }),
+  withScriptjs,
+  withGoogleMap
+)((props) =>
+  <GoogleMap
+    defaultZoom={8}
+    defaultCenter={{ lat: -34.397, lng: 150.644 }}
+  >
+    {props.isMarkerShown && <Marker position={{ lat: -34.397, lng: 150.644 }} onClick={props.onMarkerClick} />}
+  </GoogleMap>
+)
+
 
 class StartProject extends React.Component {
   constructor(props) {
@@ -62,10 +82,11 @@ class StartProject extends React.Component {
       startDate: null,
       endDate: '',
       locationError: null,
-      latitude: '',
-      longitude: '',
+      latitude: -34.397,
+      longitude: 150.644,
       error: 'Get Location',
-      enable: false
+      enable: false,
+      isMarkerShown: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleChangeEnabled = this.handleChangeEnabled.bind(this);
@@ -75,6 +96,21 @@ class StartProject extends React.Component {
   }
   handleChangeEnabled(event) {
     this.setState({ selectedEnabled: event.target.value });
+  }
+
+  componentDidMount() {
+    this.delayedShowMarker()
+  }
+
+  delayedShowMarker = () => {
+    setTimeout(() => {
+      this.setState({ isMarkerShown: true })
+    }, 3000)
+  }
+
+  handleMarkerClick = () => {
+    this.setState({ isMarkerShown: false })
+    this.delayedShowMarker()
   }
 
   render() {
@@ -314,6 +350,12 @@ class StartProject extends React.Component {
                             </div>
                     </GridItem>
                   </GridContainer>
+                 
+                    <MyMapComponent
+                      isMarkerShown={this.state.isMarkerShown}
+                      onMarkerClick={this.handleMarkerClick}
+                    />
+              
                   <GridContainer>
                     <GridItem xs={12} sm={2}>
                       <FormLabel className={classes.labelHorizontal}>

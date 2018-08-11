@@ -31,7 +31,7 @@
     "react-dom": "16.4.0",
     "react-geolocated": "^2.4.0",
     "react-geolocation": "^1.0.4",
-    "react-google-maps": "9.4.5",
+    "react-google-maps": "^9.4.5",
     "react-jvectormap": "0.0.3",
     "react-nouislider": "2.0.1",
     "react-player": "^1.6.4",
