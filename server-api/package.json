@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "newman run ../api-tests/Philance.json --reporters cli,html --reporter-html-export /tmp/report.html",
-    "start": "nodemon app.js"
+    "test": "newman run ../api-tests/Philance.json --reporters cli,html --reporter-html-export /tmp/jenkins/report.html",
+    "start": "nodemon ./bin/www"
   },
   "dependencies": {
     "bcrypt": "^2.0.1",
@@ -13,19 +13,21 @@
     "debug": "~2.6.9",
     "express": "~4.16.0",
     "global": "^4.3.2",
-	"hoek": "^5.0.3",
+    "google-distance": "^1.0.1",
+    "hoek": "^5.0.3",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.3.0",
+    "moment": "^2.22.2",
     "morgan": "~1.9.0",
     "mysql": "^2.15.0",
-    "serve": "^9.1.2",
-    "google-distance": "^1.0.1",
     "mysql2": "^1.5.3",
-    "sequelize": "^4.38.0"
+    "nodemailer": "^4.6.7",
+    "sequelize": "^4.38.0",
+    "serve": "^9.1.2"
   },
   "devDependencies": {
-    "nodemon": "^1.17.5",
-	"newman": "^3.10.0"
+    "newman": "^3.10.0",
+    "nodemon": "^1.17.5"
   }
 }

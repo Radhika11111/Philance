@@ -3,14 +3,14 @@ const Sequelize = require('sequelize');
 const sequelize = require('../util/dbconnection');
 var projects = require("./projects.model");
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log('Connection has been established successfully for Project Details.');
-  })
-  .catch(err => {
-    console.error('Unable to connect to the database for Project Details : ', err);
-  });
+// sequelize
+//   .authenticate()
+//   .then(() => {
+//     console.log('Connection has been established successfully for Project Details.');
+//   })
+//   .catch(err => {
+//     console.error('Unable to connect to the database for Project Details : ', err);
+//   });
 
 const projectDetails = sequelize.define('project_details', {
     projectId: {
@@ -25,7 +25,7 @@ const projectDetails = sequelize.define('project_details', {
     detailType: {
         type: Sequelize.STRING,
         field: 'detail_type',
-        allowNull: false,
+        // allowNull: false,
         primaryKey: true,
         values : ['SKILLS','IMPACT_CATEGORY']
     },
@@ -85,11 +85,29 @@ const projectDetails = sequelize.define('project_details', {
     {
         timestamps: false,
         freezeTableName: true
+    },
+    {
+        classMethods: {
+            associate: function(models) {
+              projectDetails.belongsTo(models.projects, {foreignKey: 'project_id'})
+            }
+          }
+    },
+    {
+    instanceMethods: {
+        toJSON: function () {
+          var values = this.get();
+          if (this.projects) {
+            values.projectId = projects.projectId;
+          }   
+          return values;
+        }
+      }
     }
-)
-// .then(() => sequilize.addConstraint('projectDetailsPk',['project_id','detail_type', 'name'], {
-//     type: 'primary key'
-// }));
-
+);
+// projectDetails.associate = function (models) {
+//     projects.belongsTo(projectDetails,{as: 'projectDetails', foreignKey:'projectId'} );
+// };
+// projects.belongsTo(projectDetails,{as: 'projectDetails', foreignKey:'projectId'} );
 
 module.exports = projectDetails;
