@@ -1,10 +1,10 @@
 import {
-    REG_EMAIL_CHANGED,
-    REG_PASSWORD_CHANGED,
+    REGISTER_EMAIL_CHANGED,
+    REGISTER_PASSWORD_CHANGED,
     REGISTER_USER,
     FIELDS_EMPTY,
-    REG_FIRST_NAME_CHANGED,
-    REG_LAST_NAME_CHANGED,
+    REGISTER_FIRST_NAME_CHANGED,
+    REGISTER_LAST_NAME_CHANGED,
     REGISTER_USER_SUCCESS,
     REGISTER_USER_FAIL
 } from '../types'
@@ -13,28 +13,28 @@ import axios from 'axios'
 
 export const firstNameChanged = text => {
     return {
-        type: REG_FIRST_NAME_CHANGED,
+        type: REGISTER_FIRST_NAME_CHANGED,
         payload: text
     }
 }
 
 export const lastNameChanged = text => {
     return {
-        type: REG_LAST_NAME_CHANGED,
+        type: REGISTER_LAST_NAME_CHANGED,
         payload: text
     }
 }
 
 export const emailChanged = text => {
     return {
-        type: REG_EMAIL_CHANGED,
+        type: REGISTER_EMAIL_CHANGED,
         payload: text
     }
 }
 
 export const passwordChanged = text => {
     return {
-        type: REG_PASSWORD_CHANGED,
+        type: REGISTER_PASSWORD_CHANGED,
         payload: text
     }
 }
