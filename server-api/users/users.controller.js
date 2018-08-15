@@ -4,14 +4,12 @@ const jwt = require("jsonwebtoken");
 var moment = require('moment')
 var users = require("./users.model");
 var userSkills = require("./user.skills.model");
+var userNotifications = require("./user.notifications.model");
 var projects = require("../projects/projects.model");
 var projectDetails = require("../projects/project.details.model");
 var projectTeam = require("../projects/projects.team.model");
 const sequelize = require('../util/dbconnection');
 const Op = sequelize.Op;
-var helpers = require('../helpers')
-var commonFunctions = helpers.default.common;
-var userApi = helpers.default.userApi;
 
 exports.createProfile = (req, res, next) => {
 
@@ -102,7 +100,6 @@ exports.login = (req, res, next) => {
 
 exports.search = (req, res, next) => {
     //TODO: Add Validators
-    var userSearchApi = userApi.search;
     var userName;
 
     if(req.body.dist||req.body.loc){
@@ -111,16 +108,16 @@ exports.search = (req, res, next) => {
         }
     }
 
-    var _sql=   `SELECT * FROM users as usrs `;
+    var _sql=   `SELECT * FROM users `+`    `;
     
-    _sql=req.body.skill==null?_sql:_sql+`INNER JOIN user_skills as skls `;
+    _sql=req.body.skill==null?_sql:_sql+`INNER JOIN user_skills `;
     // _sql=req.body.ptype==null?_sql:_sql+`INNER JOIN user_skills `;
     
     _sql=Object.keys(req.body).length === 0?_sql:_sql+`WHERE `;
-    _sql=req.body.fname==null?              _sql:_sql+`fname = '${req.body.fname}' AND `;
-    _sql=req.body.lname==null?              _sql:_sql+`lname = '${req.body.lname}' AND `;
-    _sql=req.body.personLoc==null?          _sql:_sql+`location LIKE %${req.body.personLoc}% AND `;
-    _sql=req.body.skill==null?             _sql:_sql+`skls.skill_name LIKE '%${req.body.skill}%' AND`;
+    _sql=req.body.fname==null?              _sql:_sql+`users.fname LIKE '%${req.body.fname}%' AND `;
+    _sql=req.body.lname==null?              _sql:_sql+`users.lname LIKE '%${req.body.lname}%' AND `;
+    _sql=req.body.personLoc==null?          _sql:_sql+`users.location LIKE '%${req.body.personLoc}%' AND `;
+    _sql=req.body.skill==null?             _sql:_sql+`user_skills.skill_name LIKE '%${req.body.skill}%' AND`;
     
     _sql=_sql.slice(0,-4)
 
@@ -150,12 +147,14 @@ exports.getProfile = (req, res, next) => {
 
 
 exports.updateProfile = (req, res, next) => {
-
+    var _count = 0;
     // users.belongsTo(userSkills, { as: 'userSkills', foreignKey: 'userId' });
 
     users.hasMany(userSkills, { foreignKey: 'userId' });
+    users.hasOne(userNotifications, { foreignKey: 'userId' });
 
-    sequelize.sync().then(() => users.update({
+    // sequelize.transaction(function (t) {
+        users.update({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
@@ -167,29 +166,92 @@ exports.updateProfile = (req, res, next) => {
     },
         {
             where: {
-                userId: req.body.userId,
+                    userId: req.params.userId,
             }
         }, {
             include: [{ model: userSkills, nested: true }]
         }
     ).then(_user => {
         if (_user) {
-            userSkills.destroy({ where: { userId: req.body.userId }, truncate: true, force: true }).then(
+                userSkills.destroy({ where: { userId: req.params.userId }, truncate: true, force: true }).then(
                 sequelize.transaction(function (t) {
                     sequelize.Promise.each(req.body.userSkills, function (itemToUpdate) {
-                        userSkills.create(itemToUpdate);
+                            userSkills.create({
+                                userId: req.params.userId,
+                                skillCode: itemToUpdate.skillCode,
+                                skillName: itemToUpdate.skillName,
+                                certified: itemToUpdate.certified,
+                                certificationLink: itemToUpdate.certificationLink,
+                                startDate: itemToUpdate.startDate,
+                                endDate: itemToUpdate.endDate,
+                                createdBy: req.body.userId,
+                                lastUpdatedBy: req.body.userId
                     }).then((_createdRecords) => {
-                        console.log('Updated Records : ' + _createdRecords);
+                                _count++;
+                                if (_count === (req.body.userSkills).length) {
+                                // if (_createdRecords) {
+                                    if ( typeof req.body.userNotifications !== 'undefined' &&  req.body.userNotifications !== null) {
+                                    userNotifications.findOne({ where: { userId: req.params.userId } }).then(_userNotifications => {
+    
+                                        if (_userNotifications) {
+                                            userNotifications.update({
+                                                notificationTrigger: req.body.userNotifications.notificationTrigger,
+                                                email: req.body.userNotifications.email,
+                                                text: req.body.userNotifications.text,
+                                                push: req.body.userNotifications.push,
+                                                lastUpdatedBy: req.params.userId,
+                                            }, { where: { userId: req.params.userId } }).then(_updateCount => {
             users.findAll({
-                where: { userId: req.body.userId },
-                            include: [{ model: userSkills, nested: true, as: 'userSkills', duplicating: false, required: false }]
+                                                    where: { userId: req.params.userId },
+                                                    include: [{ model: userSkills, nested: true, duplicating: false, required: false },
+                                                    { model: userNotifications, nested: true, duplicating: false, required: false }]
             }).then((_user) => {
                 res.status(200).json({
                     user: _user
                 });
             }
             )
+                                            }
+                                            )
+                                        } else {
+                                            userNotifications.create({
+                                                notificationTrigger: req.body.userNotifications.notificationTrigger,
+                                                email: req.body.userNotifications.email,
+                                                text: req.body.userNotifications.text,
+                                                push: req.body.userNotifications.push,
+                                                lastUpdatedBy: req.params.userId,
+                                                userId: req.params.userId
+                                            }).then(_userNotifications => {
+                                                users.findAll({
+                                                    where: { userId: req.params.userId },
+                                                    include: [{ model: userSkills, nested: true, duplicating: false, required: false },
+                                                    { model: userNotifications, nested: true, duplicating: false, required: false }]
+                                                }).then((_user) => {
+                                                    res.status(200).json({
+                                                        user: _user
                     });
+                                                }
+                                                )
+                                            }
+                                            )
+                                        }
+                                    }
+                                    )
+                                } else {
+                                    users.findAll({
+                                        where: { userId: req.params.userId },
+                                        include: [{ model: userSkills, nested: true, duplicating: false, required: false },
+                                        { model: userNotifications, nested: true, duplicating: false, required: false }]
+                                    }).then((_user) => {
+                                        res.status(200).json({
+                                            user: _user
+                                        });
+                                    }
+                                    )
+                                }
+                                }
+                            })
+                        })
                 })
             )
             // users.findAll({
@@ -203,15 +265,13 @@ exports.updateProfile = (req, res, next) => {
             // )
         }
     }
-    )
-    )
-        .catch(err => {
+        ).catch(err => {
             console.log(err);
             res.status(500).json({
                 error: err
             });
         })
-
+    // })
 }
 
 /**
